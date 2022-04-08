@@ -11,7 +11,8 @@ const auth = getAuth(app)
 function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [validated, setValidated] = useState(false);
+  const [registered, handleRegistered] = useState(false);
   const showEventEmail = (event) => {
     setEmail(event.target.value)
   }
@@ -20,13 +21,25 @@ function App() {
     setPassword(event.target.value)
   }
 
+  const checkIfRegistered = (event) => {
+    handleRegistered(event.target.checked)
+  }
+
   const handleFormSubmit = event => {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    setValidated(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then((response) => {
-        console.log(response.user)
+        setValidated(response.user)
       })
       .catch(error =>
-        console.error(error)
+        setValidated(error)
       )
     event.preventDefault()
   }
@@ -34,7 +47,7 @@ function App() {
   return (
     <div>
       <div className='registration w-50 mx-auto mt-5'>
-        <h1 className='text-primary'>Please register</h1>
+        <h1 className='text-primary'>Please {registered ? 'Log-in' : 'Register'}</h1>
         <Form onSubmit={handleFormSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
@@ -43,16 +56,24 @@ function App() {
               We'll never share your email with anyone else.
             </Form.Text>
             <Form.Control.Feedback type="invalid">
-              Email please!.
+              Email please!
             </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
             <Form.Control onBlur={showEventPassword} type="password" placeholder="Password" required />
+            <Form.Control.Feedback type="invalid">
+              Please enter a password.
+            </Form.Control.Feedback>
           </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formBasicCheckbox">
+            <Form.Check onClick={checkIfRegistered} type="checkbox" label="Already registered?" />
+          </Form.Group>
+
           <Button variant="primary" type="submit">
-            Submit
+            {registered ? 'Log-in' : 'Register'}
           </Button>
         </Form>
       </div>
