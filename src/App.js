@@ -1,5 +1,5 @@
 import './App.css';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import app from './firebase.init'
 import { Form } from 'react-bootstrap';
@@ -32,15 +32,30 @@ function App() {
       event.stopPropagation();
       return;
     }
-
     setValidated(true);
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((response) => {
-        setValidated(response.user)
-      })
-      .catch(error =>
-        setValidated(error)
-      )
+
+    if (registered) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(result => {
+          const user = result.user
+          console.log(user)
+          setEmail('')
+          setPassword('')
+        })
+        .catch(error =>
+          console.error(error)
+        )
+    }
+    else {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((response) => {
+          setValidated(response.user)
+        })
+        .catch(error =>
+          setValidated(error)
+        )
+    }
+
     event.preventDefault()
   }
 
