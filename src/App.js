@@ -1,5 +1,5 @@
 import './App.css';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import app from './firebase.init'
 import { Form } from 'react-bootstrap';
@@ -25,6 +25,16 @@ function App() {
     handleRegistered(event.target.checked)
   }
 
+  const sendEmailVerification = () => {
+    const auth = getAuth();
+    sendEmailVerification(auth.currentUser)
+      .then(() => {
+        // Email verification sent!
+        // ...
+      });
+
+  }
+
   const handleFormSubmit = event => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -41,6 +51,7 @@ function App() {
           console.log(user)
           setEmail('')
           setPassword('')
+          sendEmailVerification()
         })
         .catch(error =>
           console.error(error)
